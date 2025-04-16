@@ -1,0 +1,1 @@
+export const REMINDERLIST_LOCALSTORAGE_NAME = "reminder-list"

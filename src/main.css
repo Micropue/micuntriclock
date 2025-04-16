@@ -1,0 +1,19 @@
+body,html{
+    height:100%;
+}
+*{
+    margin:0;
+}
+body{
+    background-color: #FFFCF5;
+    color:#655E46;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select:none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+:root{
+    --theme-orange:#FFC400;
+    --theme-regular-color:#655E46;
+}
