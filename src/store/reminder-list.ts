@@ -5,7 +5,7 @@ export interface Reminder {
     content?: {
         main: string,
         secondary: string,
-        time: Date,
+        time: string,
     }
 }
 export default defineStore("remindersList", {

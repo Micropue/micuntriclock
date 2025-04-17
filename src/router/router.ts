@@ -6,7 +6,10 @@ const routes = [
         component: () => import("../view/home.vue"),
         meta: {
             displayName: "时钟"
-        }
+        },
+        children: [
+            { path: "new", name: "new", component: () => import("../components/new.vue") }
+        ]
     },
     {
         name: "reminders",

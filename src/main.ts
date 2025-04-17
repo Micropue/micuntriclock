@@ -10,6 +10,6 @@ app.use(router)
 app.mount("#app")
 
 
-window.addEventListener('gestruestart',e=>{
+window.addEventListener('gestruestart', e => {
     e.preventDefault()
 })

@@ -14,23 +14,25 @@
             </button>
         </template>
         <template #container>
-            <Item v-for="{ finished,content }, index in list" :finished="finished" :index="index">
+            <Item v-for="{ finished, content }, index in list" :finished="finished" :index="index">
                 <template #content-main>{{ content?.main }}</template>
                 <template #content-secondary>{{ content?.secondary }}</template>
             </Item>
             <div class="empty" v-if="!list.length">
-                <p>今日还没有代办</p>
+                <p>今日还没有未完成代办</p>
             </div>
         </template>
     </Drawer>
+    <RouterView></RouterView>
 </template>
 <style scoped lang="scss">
-.empty{
-    height:100%;
+.empty {
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
+
 .filter-button {
     display: flex;
     color: var(--theme-regular-color);
@@ -71,6 +73,12 @@ import Drawer from '@/components/drawer.vue'
 import Item from '@/components/home-item.vue'
 import useRemindersList, { type Reminder } from '@/store/reminder-list'
 import { storeToRefs, type StoreGeneric } from 'pinia'
+import { CalulateDifferenceInDays } from '@/api/date'
 const store = useRemindersList()
-const list = storeToRefs(store).list
+//只获取今天的列表。
+const list = storeToRefs(store).list.value.filter(v => {
+    const caluater = new CalulateDifferenceInDays()
+    return caluater.is_today(new Date(v.content?.time as string)) && !v.finished
+})
+
 </script>

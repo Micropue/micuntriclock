@@ -1,5 +1,5 @@
 <template>
-    <div class="nav">
+    <div class="nav" :hide="props.hide || false">
         <div :class="{ home: true, active: $route.name == 'home' }" @click="$router.push('/')">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g id="SVGRepo_bgCarrier" stroke-width="0" />
@@ -11,7 +11,7 @@
                 </g>
             </svg>
         </div>
-        <button class="new">
+        <button class="new" @click="$router.push('/new')">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -54,6 +54,11 @@
         </div>
     </div>
 </template>
+<script setup lang="ts">
+const props = defineProps<{
+    hide?: boolean
+}>()
+</script>
 <style lang="scss" scoped>
 .nav {
     $distination: 30px;
@@ -71,7 +76,10 @@
     height: 57px;
     border-radius: 10000px;
     justify-content: space-between;
-
+    transition: transform 0.3s;
+    &[hide=true]{
+        transform:translateY(100px);
+    }
     .home:hover,
     .all-reminders:hover {
         color: var(--theme-orange);
@@ -121,6 +129,7 @@
         top: -10px;
         box-shadow: 0px 3px 11px #ffc403a5;
         transition: all 0.2s;
+
         &:active {
             transform: scale(0.95);
             box-shadow: 0px 3px 20px #ffc403a5;

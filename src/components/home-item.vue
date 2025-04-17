@@ -102,14 +102,23 @@ class ItemSideSlip {
                         this.controls.style.opacity = '0'
                         return
                     }
-                    this.controls.style.opacity = `${opacity -= 0.1}`
+                    this.controls.style.opacity = `${opacity -= 0.05}`
                     requestAnimationFrame(_updateOpaticy)
                 }
                 requestAnimationFrame(_updateOpaticy)
             }
             else {
                 this.element.style.left = `${this.maxMove}px`
-                this.controls.style.opacity = `1`
+                let opacity = Number(getComputedStyle(this.controls).opacity)
+                const _updateOpaticy = () => {
+                    if (opacity >= 1) {
+                        this.controls.style.opacity = '1'
+                        return
+                    }
+                    this.controls.style.opacity = `${opacity += 0.05}`
+                    requestAnimationFrame(_updateOpaticy)
+                }
+                requestAnimationFrame(_updateOpaticy)
             }
         })
     }
@@ -148,7 +157,7 @@ onMounted(() => {
         top: 0;
         left: 0;
         width: 100%;
-
+        height:100%;
         &:active {
             transform: scale(0.97);
         }

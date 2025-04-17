@@ -13,6 +13,12 @@ body{
     -webkit-tap-highlight-color: transparent;
 }
 
+@media screen and (min-width:425px) {
+    body{
+        display: none;
+    }
+}
+
 :root{
     --theme-orange:#FFC400;
     --theme-regular-color:#655E46;
