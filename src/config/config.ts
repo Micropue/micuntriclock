@@ -1,1 +1,1 @@
-export const REMINDERLIST_LOCALSTORAGE_NAME = "reminder-list"
+export const REMINDERLIST_INDEXEDDB_NAME = "reminder-list"

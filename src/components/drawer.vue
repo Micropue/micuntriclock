@@ -109,7 +109,7 @@ if (props.enableDuration)
     top: 10%;
     box-shadow: 1px -1px 13px #90909045;
     border-radius: 20px 20px 0px 0px;
-    transition: all cubic-bezier(0.55, 0, 0.23, 1.17) 0.6s;
+    transition: all cubic-bezier(0.55, 0, 0, 1) 0.6s;
     display: flex;
     flex-direction: column;
     justify-content: end;
@@ -196,11 +196,11 @@ if (props.enableDuration)
             }
 
             &.animating {
-                animation: drawer-#{$key} 0.5s cubic-bezier(0.55, 0, 0.23, 1.17) normal forwards;
+                animation: drawer-#{$key} 0.5s cubic-bezier(0.55, 0, 0, 1) normal forwards;
             }
 
             &.closing {
-                animation: drawer-#{$key}-leave 0.5s cubic-bezier(0.55, 0, 0.23, 1.17) normal forwards;
+                animation: drawer-#{$key}-leave 0.5s cubic-bezier(0.55, 0, 0, 1) normal forwards;
             }
 
             transform: translateY($value);

@@ -1,23 +1,33 @@
 import useRemindersStore, { type Reminder } from '@/store/reminder-list'
-import { REMINDERLIST_LOCALSTORAGE_NAME } from '@/config/config'
+import { REMINDERLIST_INDEXEDDB_NAME } from '@/config/config'
+import { openDB } from 'idb'
 
-export function getRemindersFromLocalStorage(): string | null | undefined {
-    const store = useRemindersStore()
-    const storage = window.localStorage.getItem(REMINDERLIST_LOCALSTORAGE_NAME)
-    if (!storage) return
-    try {
-        const list = JSON.parse(storage) as Reminder[]
-        list.forEach(item => {
-            store.list.push(item)
-        })
-    } catch {
-        throw new Error("无法正确解析LocalStorage")
+const db = await openDB('reminders', 2, {
+    upgrade(db) {
+        if (!db.objectStoreNames.contains(REMINDERLIST_INDEXEDDB_NAME)) {
+            db.createObjectStore(REMINDERLIST_INDEXEDDB_NAME, { keyPath: 'id', autoIncrement: true })
+        }
     }
-    return storage
+})
+
+export async function getRemindersFromLocalStorage(): Promise<Reminder[]> {
+    const store = useRemindersStore()
+    const result = await db.getAll(REMINDERLIST_INDEXEDDB_NAME) as Reminder[]
+    result.forEach(i => {
+        store.list.push(i)
+    })
+    return store.list
 }
 
-export function setRemindersToLocalStorage(): void {
+export async function setRemindersToLocalStorage(): Promise<void> {
     const store = useRemindersStore()
-    const list = Array.from(store.list)
-    window.localStorage.setItem(REMINDERLIST_LOCALSTORAGE_NAME, JSON.stringify(list))
+    const list = store.list
+    let arr = new Array()
+    list.forEach(item => {
+        arr.push(item)
+    })
+    arr = JSON.parse(JSON.stringify(arr))
+    for (const v of arr) {
+        await db.add(REMINDERLIST_INDEXEDDB_NAME, v)
+    }
 }
