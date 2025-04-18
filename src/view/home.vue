@@ -80,5 +80,4 @@ const list = storeToRefs(store).list.value.filter(v => {
     const caluater = new CalulateDifferenceInDays()
     return caluater.is_today(new Date(v.content?.time as string)) && !v.finished
 })
-
 </script>

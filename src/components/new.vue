@@ -8,8 +8,6 @@ import useNavStore from '@/store/nav'
 const navStore = useNavStore()
 
 navStore.hide()
-onUnmounted(()=>navStore.display())
+onUnmounted(() => navStore.display())
 </script>
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

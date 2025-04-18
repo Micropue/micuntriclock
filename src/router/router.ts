@@ -17,7 +17,10 @@ const routes = [
         component: () => import('../view/reminders/reminders.vue'),
         meta: {
             displayName: "所有提醒事项"
-        }
+        },
+        children: [
+            { path: "new", name: "reminder-new", component: () => import("../components/new.vue") }
+        ]
     },
     {
         name: "search",
