@@ -1,61 +1,65 @@
 <template>
     <div class="datetime-selector">
         <div class="time-selector" v-if="props.type === 'time'">
-            <input type="number" :value="now.getMinutes()">
+            <input type="time" class="selection" v-model.lazy="resultDate.time">
+            <input type="number" :value="valueDate.time.hour" readonly>
             <hr>
-            <input type="number" :value="now.getSeconds()">
+            <input type="number" :value="valueDate.time.min" readonly>
         </div>
         <div class="date-selector" v-if="props.type === 'date'">
-            <input type="number" :value="now.getFullYear()" style="width: 4em;">
+            <input type="date" class="selection" v-model.lazy="resultDate.date">
+            <input type="number" :value="valueDate.date.year" style="width: 4em;" readonly>
             <hr>
-            <input type="number" :value="now.getMonth() + 1">
+            <input type="number" :value="valueDate.date.month" readonly>
             <hr>
-            <input type="number" :value="now.getDate()">
+            <input type="number" :value="valueDate.date.date" readonly>
         </div>
     </div>
 </template>
 <script setup lang="ts">
 
-import { ref, watch } from 'vue'
-
-const now = new Date()
+import { reactive, watch } from 'vue'
+import { date } from '@/api/date'
 const props = defineProps<{
     type: "time" | "date",
 }>()
+const emit = defineEmits<{
+    change: [value: string]
+}>()
 
-// class LiveCheckDateTime {
-//     eles: HTMLInputElement[] | null = null
-//     filter: RegExp | undefined = undefined
-//     handle: (message?: string) => void | Function = function () { }
-//     constructor(obeservedElements: {
-//         ele: HTMLInputElement,
-//         filter: RegExp
-//     }[], handle?: (message?: string) => void) {
+const valueDate = reactive({
+    time: {
+        hour: date('H').toString(),
+        min: date('i').toString()
+    },
+    date: {
+        year: date('Y').toString(),
+        month: date('m').toString(),
+        date: date('d').toString()
+    }
+})
 
-//     }
-//     observe() {
+const resultDate = reactive({
+    time: date('H:i').toString(),
+    date: date('Y-m-d').toString()
+})
 
-//     }
-// }
-
-
-// const emit = defineEmits<{
-//     change: [value: Date],
-//     error: [{ message: string }]
-// }>()
-// onMounted(() => {
-//     switch (props.type) {
-//         case "date": {
-//             break
-//         }
-//         case "time": {
-//             break
-//         }
-//     }
-// })
+watch(() => resultDate.time, v => {
+    valueDate.time.hour = v.match(/(.*)\:(.*)/)?.[1] as string
+    valueDate.time.min = v.match(/(.*)\:(.*)/)?.[2] as string
+    emit('change',`${resultDate.date} ${resultDate.time}`)
+})
+watch(() => resultDate.date, v => {
+    const r = v.match(/(.*)\-(.*)\-(.*)/)
+    valueDate.date.year = String(r?.[1])
+    valueDate.date.month = String(r?.[2])
+    valueDate.date.date = String(r?.[3])
+    emit('change',`${resultDate.date} ${resultDate.time}`)
+})
 </script>
 <style scoped lang="scss">
 .datetime-selector {
+
     .time-selector,
     .date-selector {
         display: flex;
@@ -65,6 +69,16 @@ const props = defineProps<{
         width: fit-content;
         overflow: hidden;
         align-items: center;
+        position: relative;
+
+        .selection {
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            left: 0;
+            width: 60%;
+            height: 100%;
+        }
 
         hr {
             width: 0.5px;

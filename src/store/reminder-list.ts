@@ -1,5 +1,5 @@
-import Reminders from "@/view/reminders/reminders.vue"
 import { defineStore } from "pinia"
+import { setRemindersToIndexedDB } from "@/progress/reminders"
 export interface Reminder {
     finished: boolean,
     content?: {
@@ -23,6 +23,17 @@ export default defineStore("remindersList", {
         },
         changeStatus(index: number, status: boolean) {
             this.list[index].finished = status
+        },
+        add(config: {
+            main: string,
+            secondary: string,
+            time: string,
+        }) {
+            this.list.push({
+                finished: false,
+                content: config
+            })
+            setRemindersToIndexedDB()
         }
     }
 })

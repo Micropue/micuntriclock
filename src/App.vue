@@ -8,10 +8,10 @@
 import Nav from './components/nav.vue'
 import Head from './components/head.vue'
 import useNavStore from '@/store/nav'
-import { getRemindersFromLocalStorage, setRemindersToLocalStorage } from './progress/get-reminders'
+import { getRemindersFromIndexedDB, setRemindersToIndexedDB } from './progress/reminders'
 import { onMounted } from 'vue'
 //主组件先获取提醒事项列表后更新到全局状态。
-onMounted(getRemindersFromLocalStorage)
+onMounted(getRemindersFromIndexedDB)
 
 const navStore = useNavStore()
 </script>

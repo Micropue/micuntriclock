@@ -3,7 +3,7 @@
         <template #head>
             <h2>新建提醒事项</h2>
             <div class="actions">
-                <button class="save">
+                <button class="save" v-if="data.main && data.secondary" @click="methods.save">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g id="System / Save">
                             <path id="Vector"
@@ -12,7 +12,7 @@
                         </g>
                     </svg>
                 </button>
-                <button class="delete">
+                <button class="delete" @click="methods.delete">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M10 12V17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                             stroke-linejoin="round" />
@@ -31,40 +31,72 @@
         </template>
         <template #container>
             <div class="container">
-                <input type="text" placeholder="主要内容" class="content-main">
-                <textarea class="content-secondary" placeholder="次要内容"></textarea>
+                <input type="text" placeholder="主要内容" v-model="data.main" class="content-main">
+                <textarea class="content-secondary" v-model="data.secondary" placeholder="次要内容"></textarea>
                 <hr>
                 <h3>时间与日期</h3>
                 <div class="option time">
                     <p class="name">时间</p>
                     <div class="action-button">
-                        <datetime-selector type="time" v-if="is_display.time"></datetime-selector>
+                        <datetime-selector type="time" v-if="is_display.time"
+                            @change="v => data.date = v"></datetime-selector>
                         <Switch style="margin-left:10px;" @change="checked => is_display.time = checked"></Switch>
                     </div>
                 </div>
                 <div class="option date">
                     <p class="name">日期</p>
                     <div class="action-button">
-                        <datetime-selector type="date" v-if="is_display.date"></datetime-selector>
+                        <datetime-selector type="date" v-if="is_display.date"
+                            @change="v => data.date = v"></datetime-selector>
                         <Switch style="margin-left:10px;" @change="checked => is_display.date = checked"></Switch>
                     </div>
                 </div>
             </div>
         </template>
     </Drawer>
+    <Sheet>
+        <template #headline>确认删除？</template>
+        <template #content>删除后无法撤销</template>
+    </Sheet>
 </template>
 <script lang="ts" setup>
 import { onUnmounted, reactive } from 'vue'
+import Sheet from '@/components/sheet.vue'
 import Drawer from './drawer.vue'
 import useNavStore from '@/store/nav'
 import DatetimeSelector from './datetime-selector.vue'
 import Switch from './switch.vue'
+import { date } from '@/api/date'
+import useReminderListStore from '@/store/reminder-list'
+import { useRoute, useRouter } from 'vue-router'
+const store = useReminderListStore()
 const navStore = useNavStore()
-
+const router = useRouter()
+const route = useRoute()
 const is_display = reactive({
     time: false,
     date: false
 })
+
+const data = reactive({
+    main: "",
+    secondary: "",
+    date: date('Y-m-d H:i:s').toString()
+})
+
+const methods = {
+    save() {
+        store.add({
+            main: data.main,
+            secondary: data.secondary,
+            time: data.date
+        })
+        router.push(route.fullPath.replace(/new/, ""))
+    },
+    delete() {
+
+    }
+}
 
 navStore.hide()
 onUnmounted(() => navStore.display())
@@ -91,9 +123,11 @@ onUnmounted(() => navStore.display())
         outline: none;
         box-shadow: 5px 6px 10px #8888881a;
         font-size: 13px;
-        p.name{
-            margin:8px 0;
+
+        p.name {
+            margin: 8px 0;
         }
+
         .action-button {
             display: flex;
             align-items: center;
