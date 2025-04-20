@@ -2,7 +2,7 @@
     <Drawer display-mode="half">
         <template #head>
             <h2>今日代办</h2>
-            <button class="filter-button">
+            <button class="filter-button" @click="filterShowed = true">
                 <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <g id="Interface / Filter">
                         <path id="Vector"
@@ -14,15 +14,17 @@
             </button>
         </template>
         <template #container>
-            <Item v-for="{ finished, content }, index in list" :finished="finished" :index="index">
+            <Item v-for="{ finished, content, id } in list" :finished="finished" :index="(id as number)">
                 <template #content-main>{{ content?.main }}</template>
-                <template #content-secondary>{{ content?.secondary }}</template>
+                <template #content-secondary>{{ content!.secondary.length >= 20 ? content?.secondary.slice(0, 20) + '...'
+                    : content?.secondary }}</template>
             </Item>
             <div class="empty" v-if="!list.length">
                 <p>今日还没有未完成代办</p>
             </div>
         </template>
     </Drawer>
+    <Filter :show="filterShowed" @cancel="filterShowed = false" @change="filterShowed = false"></Filter>
     <RouterView></RouterView>
 </template>
 <style scoped lang="scss">
@@ -71,10 +73,13 @@
 <script setup lang="ts">
 import Drawer from '@/components/drawer.vue'
 import Item from '@/components/home-item.vue'
-import useRemindersList, { type Reminder } from '@/store/reminder-list'
-import { storeToRefs, type StoreGeneric } from 'pinia'
+import useRemindersList from '@/store/reminder-list'
 import { CalulateDifferenceInDays } from '@/api/date'
+import Filter from '@/components/filter.vue'
+import { storeToRefs } from 'pinia'
+import { ref, watch } from 'vue'
 const store = useRemindersList()
+const filterShowed = ref(false)
 //只获取今天的列表。
 const list = storeToRefs(store).list.value.filter(v => {
     const caluater = new CalulateDifferenceInDays()

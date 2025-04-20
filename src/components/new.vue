@@ -3,7 +3,7 @@
         <template #head>
             <h2>新建提醒事项</h2>
             <div class="actions">
-                <button class="save" v-if="data.main && data.secondary" @click="methods.save">
+                <button class="save" v-if="data.main" @click="methods.save">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g id="System / Save">
                             <path id="Vector"
@@ -40,7 +40,7 @@
                     <div class="action-button">
                         <datetime-selector type="time" v-if="is_display.time"
                             @change="v => data.date = v"></datetime-selector>
-                        <Switch style="margin-left:10px;" @change="checked => is_display.time = checked"></Switch>
+                        <Switch style="margin-left:10px;" @change="checked =>{ is_display.time = checked; data.date = date('Y-m-d H:i:s').toString()}"></Switch>
                     </div>
                 </div>
                 <div class="option date">
@@ -48,19 +48,23 @@
                     <div class="action-button">
                         <datetime-selector type="date" v-if="is_display.date"
                             @change="v => data.date = v"></datetime-selector>
-                        <Switch style="margin-left:10px;" @change="checked => is_display.date = checked"></Switch>
+                        <Switch style="margin-left:10px;" @change="checked => {is_display.date = checked; data.date = date('Y-m-d H:i:s').toString()}"></Switch>
                     </div>
                 </div>
             </div>
         </template>
     </Drawer>
-    <Sheet>
+    <Sheet :show="deleteDialogShowed" @closed="deleteDialogShowed = false">
         <template #headline>确认删除？</template>
-        <template #content>删除后无法撤销</template>
+        <template #content>
+            <button class="delete-cancel" @click="deleteDialogShowed = false">取消</button>
+            <button class="delete-confirm"
+                @click='deleteDialogShowed = false; $router.push($route.fullPath.replace(/new/, ""))'>确认</button>
+        </template>
     </Sheet>
 </template>
 <script lang="ts" setup>
-import { onUnmounted, reactive } from 'vue'
+import { onUnmounted, reactive, ref } from 'vue'
 import Sheet from '@/components/sheet.vue'
 import Drawer from './drawer.vue'
 import useNavStore from '@/store/nav'
@@ -81,8 +85,10 @@ const is_display = reactive({
 const data = reactive({
     main: "",
     secondary: "",
-    date: date('Y-m-d H:i:s').toString()
+    date: ""
 })
+
+const deleteDialogShowed = ref(false)
 
 const methods = {
     save() {
@@ -94,7 +100,10 @@ const methods = {
         router.push(route.fullPath.replace(/new/, ""))
     },
     delete() {
-
+        if (data.main || data.secondary)
+            deleteDialogShowed.value = true
+        else
+            router.push(route.fullPath.replace(/new/, ""))
     }
 }
 
@@ -102,6 +111,37 @@ navStore.hide()
 onUnmounted(() => navStore.display())
 </script>
 <style lang="scss" scoped>
+$delete-buttons-margin: 10px;
+
+.delete-cancel,
+.delete-confirm {
+    border: none;
+    width: calc(50% - $delete-buttons-margin);
+    border-radius: 14px;
+    font-size: 1.1em;
+    padding: 10px 20px;
+    outline: none;
+    transition: all 0.3s;
+
+    &:active {
+        transform: scale(0.9);
+    }
+}
+
+.delete-cancel {
+    margin-right: $delete-buttons-margin;
+    color: var(--theme-regular-color);
+    background-color: white;
+    box-shadow: 0px 2px 10px rgba(122, 122, 122, 0.142);
+}
+
+.delete-confirm {
+    margin-left: $delete-buttons-margin;
+    color: red;
+    background-color: #ff000065;
+    box-shadow: 0px 2px 10px #ff000065;
+}
+
 .container {
     display: flex;
     flex-direction: column;

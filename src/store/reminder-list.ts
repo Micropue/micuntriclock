@@ -1,6 +1,7 @@
 import { defineStore } from "pinia"
 import { setRemindersToIndexedDB } from "@/progress/reminders"
 export interface Reminder {
+    id?:number,
     finished: boolean,
     content?: {
         main: string,
@@ -22,7 +23,15 @@ export default defineStore("remindersList", {
             }
         },
         changeStatus(index: number, status: boolean) {
-            this.list[index].finished = status
+            let realindex:number
+            for(const i in this.list){
+                if(this.list[i].id == index){
+                    realindex = Number(i)
+                    break
+                }
+            }
+            this.list[realindex!].finished = status
+            setRemindersToIndexedDB()
         },
         add(config: {
             main: string,

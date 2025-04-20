@@ -2,7 +2,7 @@
     <div class="item" name="home-item" :finished="finished">
         <div class="main-item" ref="element" @click="finished = !finished">
             <div class="action">
-                <Checkbox :checked="finished" @check-change="v => store.changeStatus(props.index, v)">
+                <Checkbox :checked="finished" @check-change="v => {store.changeStatus(props.index, v)}">
                 </Checkbox>
             </div>
             <div class="content">
