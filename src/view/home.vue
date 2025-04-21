@@ -1,4 +1,10 @@
 <template>
+    <div class="clock">
+        <div class="real-clock">
+            <canvas ref="canvas" width="500" height="500"></canvas>
+        </div>
+        <p>{{ date('Y年m月d日') }} · 今年已经过去{{ percent }}</p>
+    </div>
     <Drawer display-mode="half">
         <template #head>
             <h2>今日代办</h2>
@@ -16,7 +22,8 @@
         <template #container>
             <Item v-for="{ finished, content, id } in list" :finished="finished" :index="(id as number)">
                 <template #content-main>{{ content?.main }}</template>
-                <template #content-secondary>{{ content!.secondary.length >= 20 ? content?.secondary.slice(0, 20) + '...'
+                <template #content-secondary>{{ content!.secondary.length >= 20 ? content?.secondary.slice(0, 20) +
+                    '...'
                     : content?.secondary }}</template>
             </Item>
             <div class="empty" v-if="!list.length">
@@ -28,6 +35,38 @@
     <RouterView></RouterView>
 </template>
 <style scoped lang="scss">
+.real-clock {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: inset -8px -3px 10px #F2F2F2, -7px -3px 10px #F2F2F2;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+canvas {
+    $size: 230px;
+    width: $size;
+    height: $size;
+}
+
+.clock {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    p {
+        width: fit-content;
+        margin-top: 20px;
+        font-weight: 400;
+    }
+}
+
 .empty {
     height: 100%;
     display: flex;
@@ -77,7 +116,8 @@ import useRemindersList from '@/store/reminder-list'
 import { CalulateDifferenceInDays } from '@/api/date'
 import Filter from '@/components/filter.vue'
 import { storeToRefs } from 'pinia'
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch, type Ref } from 'vue'
+import { date } from '@/api/date'
 const store = useRemindersList()
 const filterShowed = ref(false)
 //只获取今天的列表。
@@ -85,4 +125,85 @@ const list = storeToRefs(store).list.value.filter(v => {
     const caluater = new CalulateDifferenceInDays()
     return caluater.is_today(new Date(v.content?.time as string)) && !v.finished
 })
+
+const percent = ref("0%")
+function computePercent(): string {
+    const _date = new Date()
+    const year = _date.getFullYear()
+    let allDays = 365
+    if (year % 4 == 0 && year % 400 == 0) {
+        allDays = 366
+    }
+    const month = _date.getMonth()
+    let monthDay = []
+    for (let i = 1; i <= month; i++) {
+        const everyMonthDays = new Date(date('Y').year, i, 0).getDate()
+        monthDay[i - 1] = everyMonthDays
+    }
+    const thisMonthDays = _date.getDate()
+    monthDay[monthDay.length] = thisMonthDays
+    let iter = 0
+    monthDay.forEach(i => {
+        iter += i
+    })
+    return `${Math.round(iter / allDays * 100)}%`
+}
+percent.value = computePercent()
+setInterval(() => {
+    percent.value = computePercent()
+}, 5 * 1000)
+
+const canvas = ref<HTMLCanvasElement>(null!)
+
+class DrawCircular {
+    radius: number = 200
+    element: HTMLCanvasElement = null!
+    constructor(radius: number, ref: Ref<HTMLCanvasElement>) {
+        this.radius = radius
+        this.element = ref.value
+    }
+    draw() {
+        const ctx = this.element.getContext('2d') as CanvasRenderingContext2D
+        const { width, height } = this.element
+        const centerX = width / 2
+        const centerY = height / 2
+        ctx.clearRect(0, 0, width, height)
+
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.font = 'bold 24px "Segoe UI", sans-serif'
+
+        for (let i = 0; i < 12; i++) {
+            const angle = (i / 12) * 2 * Math.PI
+            const x = centerX + this.radius * Math.cos(angle)
+            const y = centerY + this.radius * Math.sin(angle)
+            const hour = (i + 3) % 12 || 12 // 12点在顶部，顺时针排
+            if (i % 3 === 0) {
+                ctx.fillStyle = '#FFC403'
+            } else {
+                ctx.fillStyle = 'black'
+            }
+            ctx.font = `50px Heiti`
+            ctx.fillText(String(hour), centerX + (this.radius - 40) * Math.cos(angle), centerY + (this.radius - 40) * Math.sin(angle))
+            ctx.beginPath()
+            let pointSize = 5
+            if (i % 3 === 0) {
+                ctx.fillStyle = '#FFC403'
+                pointSize = 10
+            } else {
+                ctx.fillStyle = '#D0D0D0'
+            }
+            ctx.arc(x, y, pointSize, 0, 2 * Math.PI)
+            ctx.fill()
+            ctx.closePath()
+        }
+    }
+}
+
+
+onMounted(() => {
+    const drawer = new DrawCircular(canvas.value.width / 2.1, canvas)
+    drawer.draw()
+})
+
 </script>

@@ -3,16 +3,19 @@
         <template #content>
             <button class="all" :selected="selected == 'all'" @click="selected = 'all'; emit('change', selected)">
                 <p>全部</p>
-                <p>29</p>
+                <p>{{ store.list.length }}</p>
             </button>
             <button class="today" :selected="selected == 'today'" @click="selected = 'today'; emit('change', selected)">
                 <p>今天</p>
-                <p>2</p>
+                <p>{{store.list.filter(i => {
+                    const calculator = new CalulateDifferenceInDays();
+                    return calculator.is_today(new Date(i.content?.time as string));
+                }).length }}</p>
             </button>
             <button class="finished" :selected="selected == 'finished'"
                 @click="selected = 'finished'; emit('change', selected)">
                 <p>已完成</p>
-                <p>10</p>
+                <p>{{store.list.filter(i => i.finished).length}}</p>
             </button>
         </template>
     </Sheet>
@@ -21,11 +24,14 @@
 import { ref, watch } from 'vue';
 import Sheet from './sheet.vue'
 import navStore from '@/store/nav'
+import useReminderList from '@/store/reminder-list'
+import { CalulateDifferenceInDays } from '@/api/date';
 const nav = navStore()
+const store = useReminderList()
 type SelecteValue = "all" | "today" | "finished"
 const emit = defineEmits<{
     cancel: [];
-    change: [value: SelecteValue]
+    change: [value: SelecteValue];
 }>()
 const props = defineProps<{
     show: boolean
@@ -39,6 +45,7 @@ if (show.value) {
 watch(() => props.show, v => {
     show.value = v;
     if (v) nav.hide()
+    else nav.display()
 })
 
 </script>

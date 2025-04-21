@@ -13,7 +13,7 @@ body{
     -webkit-tap-highlight-color: transparent;
 }
 
-@media screen and (min-width:425px) {
+@media screen and (min-width:431px) {
     body{
         display: none;
     }
