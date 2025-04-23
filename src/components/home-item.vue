@@ -2,7 +2,7 @@
     <div class="item" name="home-item" :finished="finished">
         <div class="main-item" ref="element" @click="finished = !finished">
             <div class="action">
-                <Checkbox :checked="finished" @check-change="v => {store.changeStatus(props.index, v)}">
+                <Checkbox :checked="finished" @check-change="v => { store.changeStatus(props.index, v) }">
                 </Checkbox>
             </div>
             <div class="content">
@@ -22,7 +22,7 @@
                         fill="currentColor" />
                 </svg>
             </button>
-            <button class="delete">
+            <button class="delete" @click="store.delete(props.index)">
                 <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M10 12V17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round" />
@@ -157,7 +157,8 @@ onMounted(() => {
         top: 0;
         left: 0;
         width: 100%;
-        height:100%;
+        height: 100%;
+
         &:active {
             transform: scale(0.97);
         }

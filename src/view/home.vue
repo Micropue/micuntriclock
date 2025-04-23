@@ -2,6 +2,7 @@
     <div class="clock">
         <div class="real-clock">
             <canvas ref="canvas" width="500" height="500"></canvas>
+            <canvas ref="pointerCanvas" class="pointer-canvas" width="500" height="500"></canvas>
         </div>
         <p>{{ date('Y年m月d日') }} · 今年已经过去{{ percent }}</p>
     </div>
@@ -36,8 +37,9 @@
 </template>
 <style scoped lang="scss">
 .real-clock {
-    width: 250px;
-    height: 250px;
+    $size: 250px;
+    width: $size;
+    height: $size;
     border-radius: 50%;
     overflow: hidden;
     box-shadow: inset -8px -3px 10px #F2F2F2, -7px -3px 10px #F2F2F2;
@@ -45,6 +47,16 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+
+    .pointer-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: $size;
+        height: $size;
+        filter:drop-shadow(0px 0px 6px rgba(0, 0, 0, 0.334));
+    }
 }
 
 canvas {
@@ -171,39 +183,109 @@ class DrawCircular {
 
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
-        ctx.font = 'bold 24px "Segoe UI", sans-serif'
-
-        for (let i = 0; i < 12; i++) {
-            const angle = (i / 12) * 2 * Math.PI
-            const x = centerX + this.radius * Math.cos(angle)
-            const y = centerY + this.radius * Math.sin(angle)
-            const hour = (i + 3) % 12 || 12 // 12点在顶部，顺时针排
-            if (i % 3 === 0) {
-                ctx.fillStyle = '#FFC403'
-            } else {
-                ctx.fillStyle = 'black'
+        const superCrumble = new FontFace('Super-Crumble', `url(${new URL('../fonts/Super Crumble.ttf', import.meta.url).href})`)
+        superCrumble.load().then(() => {
+            ctx.font = 'bold 24px Super-Crumble'
+            for (let i = 0; i < 12; i++) {
+                const angle = (i / 12) * 2 * Math.PI
+                //极坐标公式
+                const x = centerX + this.radius * Math.cos(angle)
+                const y = centerY + this.radius * Math.sin(angle)
+                const hour = (i + 3) % 12 || 12 // 12点在顶部，顺时针排
+                if (i % 3 === 0) {
+                    ctx.fillStyle = '#FFC403'
+                } else {
+                    ctx.fillStyle = 'black'
+                }
+                ctx.font = `50px Heiti`
+                ctx.fillText(String(hour), centerX + (this.radius - 40) * Math.cos(angle), centerY + (this.radius - 40) * Math.sin(angle))
+                ctx.beginPath()
+                let pointSize = 5
+                if (i % 3 === 0) {
+                    ctx.fillStyle = '#FFC403'
+                    pointSize = 10
+                } else {
+                    ctx.fillStyle = '#D0D0D0'
+                }
+                ctx.arc(x, y, pointSize, 0, 2 * Math.PI)
+                ctx.fill()
+                ctx.closePath()
             }
-            ctx.font = `50px Heiti`
-            ctx.fillText(String(hour), centerX + (this.radius - 40) * Math.cos(angle), centerY + (this.radius - 40) * Math.sin(angle))
-            ctx.beginPath()
-            let pointSize = 5
-            if (i % 3 === 0) {
-                ctx.fillStyle = '#FFC403'
-                pointSize = 10
-            } else {
-                ctx.fillStyle = '#D0D0D0'
-            }
-            ctx.arc(x, y, pointSize, 0, 2 * Math.PI)
-            ctx.fill()
-            ctx.closePath()
-        }
+        })
     }
 }
 
+const pointerCanvas = ref<HTMLCanvasElement>(null!)
+
+class DrawPointer {
+    radius: number = 0
+    canvas: HTMLCanvasElement = null!
+    centerX: number = 0
+    centerY: number = 0
+    constructor(radius: number, ref: Ref<HTMLCanvasElement>) {
+        this.radius = radius
+        this.canvas = ref.value
+        const { width, height } = this.canvas
+        this.centerX = width / 2
+        this.centerY = height / 2
+    }
+    private draw(): void {
+        const nowtime = new Date()
+        const hours = nowtime.getHours() % 12 + nowtime.getMinutes() / 60
+        const minute = nowtime.getMinutes() + nowtime.getSeconds() / 60
+        const rotate = {
+            hours: (hours / 12) * 360 - 90,
+            minute: (minute / 60) * 360 - 90
+        }
+        const radians = {
+            hours: rotate.hours * (Math.PI / 180),
+            minute: rotate.minute * (Math.PI / 180)
+        }
+        const location: {
+            [keys: string]: {
+                x: number,
+                y: number
+            }
+        } = {
+            hours: {
+                x: this.centerX + (this.radius * 0.55) * Math.cos(radians.hours),
+                y: this.centerY + (this.radius * 0.55) * Math.sin(radians.hours)
+            },
+            minute: {
+                x: this.centerX + this.radius * 0.9 * Math.cos(radians.minute),
+                y: this.centerY + this.radius * 0.9 * Math.sin(radians.minute)
+            }
+        }
+        const ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D
+        this.clear()
+        Object.keys(location).forEach(i => {
+            ctx.beginPath()
+            ctx.moveTo(this.centerX, this.centerY)
+            ctx.lineTo(location[i].x, location[i].y)
+            ctx.strokeStyle = i == 'hours' ? '#FFC403' : '#655E46'
+            ctx.lineWidth = 10
+            ctx.lineCap = 'round'
+            ctx.stroke()
+            ctx.closePath()
+        })
+    }
+    private clear() {
+        const ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D
+        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+    }
+    init() {
+        this.draw()
+        setInterval(() => {
+            this.draw()
+        }, 1000)
+    }
+}
 
 onMounted(() => {
     const drawer = new DrawCircular(canvas.value.width / 2.1, canvas)
     drawer.draw()
+    const pointerDrawer = new DrawPointer(pointerCanvas.value.width / 2.5, pointerCanvas)
+    pointerDrawer.init()
 })
 
 </script>

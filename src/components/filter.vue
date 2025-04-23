@@ -36,7 +36,7 @@ const emit = defineEmits<{
 const props = defineProps<{
     show: boolean
 }>()
-const selected = ref<SelecteValue>("all")
+const selected = ref<SelecteValue>("today")
 
 const show = ref(props.show)
 if (show.value) {

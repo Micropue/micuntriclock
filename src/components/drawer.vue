@@ -69,7 +69,7 @@ class DrawerMove {
             switch (displayMode) {
                 case "half":
                     if (innerHeight - top <= innerHeight * 0.7) {
-                        this.drawer.style.transform = `translateY(40%)`;
+                        this.drawer.style.transform = `translateY(50%)`;
                     } else {
                         this.drawer.style.transform = `translateY(0)`;
                         this.drawer.setAttribute("display-mode", "full")
@@ -161,10 +161,10 @@ if (props.enableDuration)
 
     @each $key in (half, full, hide) {
         &[display-mode="#{$key}"] {
-            $value: 40%;
+            $value: 50%;
 
             @if $key ==half {
-                $value: 40%;
+                $value: 50%;
             }
 
             @if $key ==full {
