@@ -2,7 +2,7 @@
     <div class="format">
         <div class="slider" ref="slider">{{ formats[selected].title }}</div>
         <div class="item" ref="itemList" v-for="{ name, title }, index in formats"
-            @click="selected = index; trigging(title)">
+            @click="selected = index; trigging(name)">
             <p>{{ title }}</p>
         </div>
         <div class="newlist">
@@ -31,19 +31,21 @@
     background-color: #FFFFFF;
     border-radius: 20px;
     box-shadow: 2px 4px 10px #95959527;
-    .newlist{
+
+    .newlist {
         position: absolute;
-        right:0;
-        margin:auto 8px;
+        right: 0;
+        margin: auto 8px;
         background-color: #fff3c85b;
-        border:1px solid currentColor;
+        border: 1px solid currentColor;
         display: flex;
-        height:fit-content;
+        height: fit-content;
         border-radius: 14px;
-        top:0;
-        bottom:0;
-        padding:4px;
+        top: 0;
+        bottom: 0;
+        padding: 4px;
     }
+
     .slider {
         position: absolute;
         top: 0;
@@ -64,7 +66,8 @@
         font-size: 13px;
         border-radius: 10px;
         transition: all 0.2s;
-        &:active{
+
+        &:active {
             background-color: rgb(242, 242, 242);
         }
     }
@@ -72,18 +75,22 @@
 </style>
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
-const formats = reactive([
+const formats = reactive<{
+    title: string;
+    name: Filter
+}[]>([
     { title: "全部", name: "all" },
     { title: "今日", name: "today" },
-    { title: "已完成", name: "finish" }
+    { title: "已完成", name: "finished" }
 ])
 const itemList = ref<HTMLElement[]>([])
 const selected = ref(0)
 const slider = ref<HTMLElement>(null!)
+type Filter = "all" | "today" | "finished"
 const emit = defineEmits<{
-    update: [value: string]
+    update: [value: Filter]
 }>()
-const trigging = (selectedName: string) => {
+const trigging = (selectedName: Filter) => {
     const selectedItem = itemList.value[selected.value]
     const { left: margin } = selectedItem.getBoundingClientRect()
     const mainleft = window.innerWidth * 0.1 / 2 + 8

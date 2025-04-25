@@ -18,7 +18,9 @@ body{
         display: none;
     }
 }
-
+#app{
+    height:100%;
+}
 :root{
     --theme-orange:#FFC400;
     --theme-regular-color:#655E46;
