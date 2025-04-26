@@ -5,10 +5,10 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import { ref, watch } from 'vue'
 import RemindersItem from './reminders-item.vue'
 import reminderListStore from '@/store/reminder-list'
-import { CalulateDifferenceInDays } from '@/api/date';
+import { CalculateDifferenceInDays } from '@/api/date'
 const store = reminderListStore()
 const list = ref<FiltedArray[]>([])
 const props = defineProps<{
@@ -34,7 +34,7 @@ function toFilter(filter: "all" | "today" | "finished", arr: typeof store.list, 
             secondary: i.content?.secondary as string
         }
         list.push(reduced)
-        const calulator = new CalulateDifferenceInDays()
+        const calulator = new CalculateDifferenceInDays()
         map.set(reduced, {
             isToday: calulator.is_today(new Date(i.content?.time as string)),
             finished: i.finished
@@ -68,6 +68,7 @@ watch(() => props.filter, v => {
     padding-bottom:87px;
     box-sizing: border-box;
     margin-top:42px;
-    overflow: scroll;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 </style>

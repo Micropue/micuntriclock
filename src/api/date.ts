@@ -1,4 +1,4 @@
-export class CalulateDifferenceInDays {
+export class CalculateDifferenceInDays {
     time: Date = new Date()!
     inspectionTime: Date = new Date()
     /**

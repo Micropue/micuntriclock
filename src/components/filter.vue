@@ -8,7 +8,7 @@
             <button class="today" :selected="selected == 'today'" @click="selected = 'today'; emit('change', selected)">
                 <p>今天</p>
                 <p>{{store.list.filter(i => {
-                    const calculator = new CalulateDifferenceInDays();
+                    const calculator = new CalculateDifferenceInDays();
                     return calculator.is_today(new Date(i.content?.time as string));
                 }).length }}</p>
             </button>
@@ -25,7 +25,7 @@ import { ref, watch } from 'vue';
 import Sheet from './sheet.vue'
 import navStore from '@/store/nav'
 import useReminderList from '@/store/reminder-list'
-import { CalulateDifferenceInDays } from '@/api/date';
+import { CalculateDifferenceInDays } from '@/api/date';
 const nav = navStore()
 const store = useReminderList()
 type SelecteValue = "all" | "today" | "finished"

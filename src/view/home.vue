@@ -22,7 +22,7 @@
         </template>
         <template #container>
             <Item v-for="{ finished, content, id } in list" :finished="finished" :index="(id as number)">
-                <template #content-main>{{ content?.main }}</template>
+                <template #content-main>{{ content!.main.length >= 10 ? content?.main.slice(0,10) + '...' : content?.main }}</template>
                 <template #content-secondary>{{ content!.secondary.length >= 20 ? content?.secondary.slice(0, 20) +
                     '...'
                     : content?.secondary }}</template>
@@ -125,7 +125,7 @@ canvas {
 import Drawer from '@/components/drawer.vue'
 import Item from '@/components/home-item.vue'
 import useRemindersList from '@/store/reminder-list'
-import { CalulateDifferenceInDays } from '@/api/date'
+import { CalculateDifferenceInDays } from '@/api/date'
 import Filter from '@/components/filter.vue'
 import { storeToRefs } from 'pinia'
 import { onMounted, ref, watch, type Ref } from 'vue'
@@ -134,7 +134,7 @@ const store = useRemindersList()
 const filterShowed = ref(false)
 //只获取今天的列表。
 const list = storeToRefs(store).list.value.filter(v => {
-    const caluater = new CalulateDifferenceInDays()
+    const caluater = new CalculateDifferenceInDays()
     return caluater.is_today(new Date(v.content?.time as string)) && !v.finished
 })
 

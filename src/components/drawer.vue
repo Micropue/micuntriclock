@@ -117,7 +117,7 @@ if (props.enableDuration)
     box-sizing: border-box;
     overflow-y: scroll;
     overflow-x: hidden;
-
+    z-index:99;
     .trigger {
         background-color: transparent;
         opacity: 0;

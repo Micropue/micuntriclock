@@ -77,6 +77,7 @@ const props = defineProps<{
     border-radius: 10000px;
     justify-content: space-between;
     transition: transform 0.3s;
+    z-index:100;
     &[hide=true]{
         transform:translateY(100px);
     }

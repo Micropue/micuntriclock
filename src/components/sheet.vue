@@ -41,6 +41,7 @@ watch(() => props.show, v => show.value = v)
     opacity: 0;
     pointer-events: none;
     transition: all 0.3s;
+    z-index:100;
     .clip{
         position: absolute;
         z-index:1;
