@@ -1,7 +1,8 @@
 <template>
     <div class="item">
         <div class="container" ref="container" :finished="finished">
-            <Checkbox class="_checkbox" :checked="finished" @check-change="v => finished = v"></Checkbox>
+            <Checkbox class="_checkbox" :checked="finished"
+                @check-change="v => { finished = v; store.changeStatus(props.index, v) }"></Checkbox>
             <div class="content">
                 <h2>{{ props.main.length > 10 ? props.main.slice(0, 10) + '...' : props.main }}</h2>
                 <p>{{ props.secondary.length > 20 ? props.secondary.slice(0, 20) + "..." : props.secondary }}</p>
@@ -35,10 +36,13 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, type Ref } from 'vue'
 import Checkbox from './checkbox.vue'
+import useReminderList from '@/store/reminder-list'
+const store = useReminderList()
 const props = defineProps<{
     finished: boolean,
     main: string,
-    secondary: string
+    secondary: string,
+    index: number
 }>()
 const finished = ref(props.finished)
 watch(() => props.finished, v => finished.value = v)

@@ -128,7 +128,7 @@ import useRemindersList from '@/store/reminder-list'
 import { CalculateDifferenceInDays } from '@/api/date'
 import Filter from '@/components/filter.vue'
 import { storeToRefs } from 'pinia'
-import { onMounted, ref, watch, type Ref } from 'vue'
+import { onMounted, ref, type Ref } from 'vue'
 import { date } from '@/api/date'
 const store = useRemindersList()
 const filterShowed = ref(false)
@@ -180,12 +180,11 @@ class DrawCircular {
         const centerX = width / 2
         const centerY = height / 2
         ctx.clearRect(0, 0, width, height)
-
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         const superCrumble = new FontFace('Super-Crumble', `url(${new URL('../fonts/Super Crumble.ttf', import.meta.url).href})`)
         superCrumble.load().then(() => {
-            ctx.font = 'bold 24px Super-Crumble'
+            ctx.font = '50px Super-Crumble'
             for (let i = 0; i < 12; i++) {
                 const angle = (i / 12) * 2 * Math.PI
                 //极坐标公式
@@ -197,7 +196,7 @@ class DrawCircular {
                 } else {
                     ctx.fillStyle = 'black'
                 }
-                ctx.font = `50px Heiti`
+                // ctx.font = `50px Heiti`
                 ctx.fillText(String(hour), centerX + (this.radius - 40) * Math.cos(angle), centerY + (this.radius - 40) * Math.sin(angle))
                 ctx.beginPath()
                 let pointSize = 5

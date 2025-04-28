@@ -9,7 +9,6 @@ const db = await openDB('reminders', 2, {
         }
     }
 })
-
 export async function getRemindersFromIndexedDB(): Promise<Reminder[]> {
     const store = useRemindersStore()
     const result = await db.getAll(REMINDERLIST_INDEXEDDB_NAME) as Reminder[]

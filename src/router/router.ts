@@ -5,7 +5,7 @@ const routes = [
         path: "/",
         component: () => import("../view/home.vue"),
         meta: {
-            displayName: "时钟"
+            displayName: "主页"
         },
         children: [
             { path: "new", name: "new", component: () => import("../components/new.vue") }

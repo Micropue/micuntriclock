@@ -1,5 +1,4 @@
 <template>
-
     <Head></Head>
     <RouterView></RouterView>
     <Nav :hide="navStore.hided"></Nav>

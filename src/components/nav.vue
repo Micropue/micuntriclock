@@ -113,7 +113,7 @@ const props = defineProps<{
     }
 
     .new {
-        $size: 50px;
+        $size: 55px;
         position: absolute;
         left: 0;
         right: 0;

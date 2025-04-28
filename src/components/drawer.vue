@@ -93,7 +93,7 @@ onMounted(() => {
     })
 });
 if (props.enableDuration)
-    onBeforeRouteLeave((to, from, next) => {
+    onBeforeRouteLeave((_to, _from, next) => {
         closing.value = true
         setTimeout(() => {
             next()

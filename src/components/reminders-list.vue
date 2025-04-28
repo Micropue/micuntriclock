@@ -1,6 +1,6 @@
 <template>
     <div class="list">
-        <RemindersItem v-for="{ finished, main, secondary } in list" :finished="finished" :main="main"
+        <RemindersItem v-for="{ finished, main, secondary ,id} in list" :index="id" :finished="finished" :main="main"
             :secondary="secondary"></RemindersItem>
     </div>
 </template>
@@ -15,6 +15,7 @@ const props = defineProps<{
     filter: "all" | "today" | "finished"
 }>()
 type FiltedArray = {
+    id: number,
     finished: boolean,
     main: string,
     secondary: string
@@ -29,6 +30,7 @@ function toFilter(filter: "all" | "today" | "finished", arr: typeof store.list, 
     const map = new WeakMap<FiltedArray, Rules>()
     arr.forEach(i => {
         const reduced = {
+            id:i.id as number,
             finished: i.finished,
             main: i.content?.main as string,
             secondary: i.content?.secondary as string
@@ -62,12 +64,12 @@ watch(() => props.filter, v => {
 })
 </script>
 <style lang="scss" scoped>
-.list{
-    width:100%;
-    height:calc(100% - 127px);
-    padding-bottom:87px;
+.list {
+    width: 100%;
+    height: calc(100% - 127px);
+    padding-bottom: 87px;
     box-sizing: border-box;
-    margin-top:42px;
+    margin-top: 42px;
     overflow-y: scroll;
     overflow-x: hidden;
 }
